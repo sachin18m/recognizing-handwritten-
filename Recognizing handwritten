@@ -1,0 +1,51 @@
+import tensorflow as tf
+import pandas as pd
+import numpy as np
+from tensorflow.keras import layers, models
+import matplotlib.pyplot as plt
+
+# Load the MNIST dataset
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
+
+# Convert to DataFrames
+df_train = pd.DataFrame(x_train.reshape(-1, 28*28))
+df_train['label'] = y_train
+
+df_test = pd.DataFrame(x_test.reshape(-1, 28*28))
+df_test['label'] = y_test
+
+# Separate features and labels
+X_train = df_train.drop('label', axis=1).values / 255.0
+y_train = df_train['label'].values
+
+X_test = df_test.drop('label', axis=1).values / 255.0
+y_test = df_test['label'].values
+
+# Reshape for CNN input: (samples, height, width, channels)
+X_train = X_train.reshape(-1, 28, 28, 1)
+X_test = X_test.reshape(-1, 28, 28, 1)
+
+# Build a CNN model
+model = models.Sequential([
+    layers.Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)),
+    layers.MaxPooling2D((2, 2)),
+
+    layers.Conv2D(64, (3, 3), activation='relu'),
+    layers.MaxPooling2D((2, 2)),
+
+    layers.Flatten(),
+    layers.Dense(64, activation='relu'),
+    layers.Dense(10, activation='softmax')
+])
+
+# Compile the model
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Train the model
+model.fit(X_train, y_train, epochs=5, validation_data=(X_test, y_test))
+
+# Evaluate accuracy
+test_loss, test_acc = model.evaluate(X_test, y_test, verbose=2)
+print(f"\nTest Accuracy: {test_acc:.4f}")
