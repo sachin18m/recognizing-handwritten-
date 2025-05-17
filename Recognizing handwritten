@@ -49,3 +49,103 @@ model.fit(X_train, y_train, epochs=5, validation_data=(X_test, y_test))
 # Evaluate accuracy
 test_loss, test_acc = model.evaluate(X_test, y_test, verbose=2)
 print(f"\nTest Accuracy: {test_acc:.4f}")
+Import necessary libraries
+import numpy as np
+import tensorflow as tf
+import streamlit as st
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
+from tensorflow.keras.datasets import mnist
+from tensorflow.keras.utils import to_categorical
+from PIL import Image
+
+Load dataset (MNIST)
+(X_train, y_train), (X_test, y_test) = mnist.load_data()
+
+Preprocess the data
+X_train = X_train.reshape(-1, 28, 28, 1).astype('float32') / 255.0
+X_test = X_test.reshape(-1, 28, 28, 1).astype('float32') / 255.0
+
+y_train = to_categorical(y_train, 10)
+y_test = to_categorical(y_test, 10)
+
+Build CNN Model
+model = Sequential([
+Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)),
+MaxPooling2D(pool_size=(2, 2)),
+Flatten(),
+Dense(128, activation='relu'),
+Dense(10, activation='sofrom keras.models import Sequential
+from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
+
+cnn_model = Sequential([
+Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)),
+MaxPooling2D(pool_size=(2, 2)),
+Flatten(),
+Dense(128, activation='relu'),
+Dense(10, activation='softmax')
+])
+
+cnn_model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+cnn_model.fit(X_train, y_train, epochs=5, batch_size=64, validation_data=(X_test, y_test))
+ftmax')
+])
+
+Compile the model
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+Train the model
+model.fit(X_train, y_train, epochs=5, batch_size=64, validation_data=(X_test, y_test))
+
+•	Save the model
+model.save('mnist_cnn_model.h5')
+
+Streamlit UI for Deployment
+st.title("Handwritten Digit Recognition")
+uploaded_image = st.file_uploader("Choose an image...", type=["png", "jpg", "jpeg"])
+
+if uploaded_image is not None:
+img = Image.open(uploaded_image).convert('L')
+img = img.resize((28, 28))
+img_array = np.array(img) / 255.0
+img_array = img_array.reshape(1, 28, 28, 1)
+
+# Prediction
+prediction = model.predict(img_array)
+predicted_label = np.argmax(prediction, axis=1)[0]
+
+# Display Prediction
+st.image(img, caption="Uploaded Image", use_column_width=True)
+st.write(f"Predicted Digit: {predicted_label}")
+streamlit==1.8.0
+tensorflow==2.9.1
+numpy==1.21.5
+Pillow==9.0.1
+import streamlit as st
+import tensorflow as tf
+import numpy as np
+from PIL import Image
+
+Load the trained model
+model = tf.keras.models.load_model('mnist_cnn_model.h5')
+
+Set up the title
+st.title("Handwritten Digit Recognition")
+
+•	Allow user to upload an image
+•	uploaded_image = st.file_uploader("Choose an image...", type=["png", "jpg", "jpeg"])
+if uploaded_image is not None:
+img = Image.open(uploaded_image).convert('L')
+img = img.resize((28, 28))
+img_array = np.array(img) / 255.0
+img_array = img_array.reshape(1, 28, 28, 1)
+
+# Prediction
+prediction = model.predict(img_array)
+predicted_label = np.argmax(prediction, axis=1)[0]
+
+# Display prediction
+st.image(img, caption="Uploaded Image", use_column_width=True)
+st.write(f"Predicted Digit: {predicted_label}")
+
+
